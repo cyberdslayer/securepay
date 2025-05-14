@@ -10,45 +10,58 @@ app.post("/hdfcWebhook", async (req, res) => {
     //TODO: HDFC bank should ideally send us a secret so we know this is sent by them
     const paymentInformation: {
         token: string;
-        userId: string;
         amount: string;
     } = {
         token: req.body.token,
-        userId: req.body.user_identifier,
-        amount: req.body.amount
+        amount: req.body.amount || "0"
     };
 
     try {
         // Logging the payment information for debugging purposes
         console.log('Received payment information:', paymentInformation);
 
-        const isBalanceExist = await db.balance.findFirst({
-            where:{
-                userId: Number(paymentInformation.userId)
+        // First find the transaction by token to get the correct userId
+        const transaction = await db.onRampTransaction.findUnique({
+            where: {
+                token: paymentInformation.token
             }
-        })
-        // to create new user if does not exist
+        });
+
+        if (!transaction) {
+            console.error('Transaction not found for token:', paymentInformation.token);
+            return res.status(404).json({
+                message: "Transaction not found"
+            });
+        }
+
+        const userId = transaction.userId;
+        const amount = transaction.amount; // Use the amount from our transaction record
+
+        const isBalanceExist = await db.balance.findFirst({
+            where: {
+                userId: userId
+            }
+        });
 
         await db.$transaction([
-            isBalanceExist == undefined? db.balance.create({
-                data:{
-                    userId: Number(paymentInformation.userId),
-                    amount: Number(paymentInformation.amount),
-                    locked:0
+            isBalanceExist == undefined ? 
+            db.balance.create({
+                data: {
+                    userId: userId,
+                    amount: amount,
+                    locked: 0
                 }
-            }): db.balance.updateMany({
+            }) : 
+            db.balance.updateMany({
                 where: {
-                    userId: Number(paymentInformation.userId)
+                    userId: userId
                 },
                 data: {
                     amount: {
-                        //  can also get this from our DB
-                        increment: Number(paymentInformation.amount)
+                        increment: amount
                     }
-                },
-                
-            })
-            ,
+                }
+            }),
             db.onRampTransaction.updateMany({
                 where: {
                     token: paymentInformation.token
@@ -61,18 +74,14 @@ app.post("/hdfcWebhook", async (req, res) => {
 
         res.json({
             message: "Captured"
-        })
+        });
     } catch(e) {
         // Logging the error for debugging purposes
         console.error('Error while processing webhook:', e);
         res.status(500).json({
             message: "Error while processing webhook"
-        })
+        });
     }
-    
-
 })
-
-
 
 app.listen(3003);

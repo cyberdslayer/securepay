@@ -2,19 +2,42 @@
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
-export const SidebarItem = ({ href, title, icon }: { href: string; title: string; icon: React.ReactNode }) => {
+export const SidebarItem = ({ 
+  href, 
+  title, 
+  icon, 
+  collapsed = false 
+}: { 
+  href: string; 
+  title: string; 
+  icon: React.ReactNode;
+  collapsed?: boolean;
+}) => {
     const router = useRouter();
-    const pathname = usePathname()
-    const selected = pathname === href
+    const pathname = usePathname();
+    const selected = pathname === href;
 
-    return <div className={`flex ${selected ? "text-[#6a51a6]" : "text-slate-500"} cursor-pointer  p-2 pl-8`} onClick={() => {
-        router.push(href);
-    }}>
-        <div className="pr-2">
-            {icon}
+    return (
+      <div 
+        className={`
+          flex items-center cursor-pointer transition-all mb-2
+          ${selected ? "bg-indigo-50 text-indigo-600" : "text-slate-500 hover:bg-gray-50"} 
+          ${collapsed ? "justify-center py-4" : "px-6 py-3"}
+          rounded-lg mx-2
+        `} 
+        onClick={() => {
+          router.push(href);
+        }}
+        title={collapsed ? title : ""}
+      >
+        <div className={collapsed ? "" : "mr-3"}>
+          {icon}
         </div>
-        <div className={`font-bold ${selected ? "text-[#6a51a6]" : "text-slate-500"}`}>
+        {!collapsed && (
+          <div className={`font-medium ${selected ? "text-indigo-600" : "text-slate-700"}`}>
             {title}
-        </div>
-    </div>
+          </div>
+        )}
+      </div>
+    );
 }

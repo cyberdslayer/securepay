@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npx esbuild ./src/index.ts --bundle --platform=node --outfile=dist/index.js",
+    "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "npm run build && npm run start"
+    "dev": "ts-node src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -14,7 +14,10 @@
   "dependencies": {
     "@repo/db": "*",
     "@types/express": "^4.17.21",
-    "esbuild": "^0.20.2",
     "express": "^4.19.1"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }

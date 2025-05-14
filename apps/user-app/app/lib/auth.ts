@@ -8,7 +8,9 @@ export const authOptions = {
 
     
     providers: [
+      // Regular credentials provider (existing)
       CredentialsProvider({
+          id: 'credentials',
           name: 'Credentials',
           credentials: {
             phone: { label: "Phone number", type: "text", placeholder: "999-999-9999", required: true },
@@ -64,6 +66,47 @@ export const authOptions = {
             return null
           },
         }),
+        
+        // New SRP credentials provider
+        CredentialsProvider({
+          id: 'srp',
+          name: 'SRP Authentication',
+          credentials: {
+            phoneNumber: { label: "Phone Number", type: "text", placeholder: "Enter your phone number" },
+            userId: { label: "User ID", type: "text" },
+            clientProof: { label: "Client Proof", type: "text" },
+          },
+          async authorize(credentials: any) {
+            if (!credentials.userId || !credentials.phoneNumber) {
+              return null;
+            }
+
+            try {
+              // The SRP verification should have already happened in the API endpoints
+              // Here we just need to retrieve the user since the proof was verified
+              const user = await db.user.findFirst({
+                where: {
+                  id: parseInt(credentials.userId),
+                  number: credentials.phoneNumber
+                }
+              });
+
+              if (!user) {
+                return null;
+              }
+
+              // Return the user for creating the session
+              return {
+                id: user.id.toString(),
+                name: user.name || "",
+                email: user.number // Using phone number as email for NextAuth
+              };
+            } catch (error) {
+              console.error("SRP auth error:", error);
+              return null;
+            }
+          }
+        }),
 
         GithubProvider({
             clientId: 'Ov23liwJO6nF8rMxH9sJ',
@@ -80,6 +123,8 @@ export const authOptions = {
 
             return session
         }
+    },
+    pages: {
+      signIn: '/auth/signin', // Custom sign-in page path
     }
   }
-  

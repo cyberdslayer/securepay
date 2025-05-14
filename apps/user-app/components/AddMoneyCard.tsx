@@ -8,7 +8,7 @@ import { createOnRampTransaction } from "../app/lib/actions/createOnrampTransact
 
 const SUPPORTED_BANKS = [{
     name: "SBI Bank",
-    redirectUrl: ""
+    redirectUrl: "https://retail.onlinesbi.sbi/retail/login.htm"
 },{
     name: "HDFC Bank",
     redirectUrl: "https://netbanking.hdfcbank.com"
