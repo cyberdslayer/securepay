@@ -1,6 +1,6 @@
-# PaySmart
+# SecurePay
 
-**PaySmart** is a payment platform similar to Paytm, built to handle a variety of financial transactions like peer-to-peer (P2P) transfers, bank transfers, and wallet management. The platform focuses on secure authentication, integration with multiple banking APIs, and a scalable architecture to handle real-time transactions.
+**SecurePay** is a payment platform similar to Paytm, built to handle a variety of financial transactions like peer-to-peer (P2P) transfers, bank transfers, and wallet management. The platform focuses on secure authentication, integration with multiple banking APIs, and a scalable architecture to handle real-time transactions.
 
 ## Table of Contents
 - [Features](#features)
