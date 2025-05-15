@@ -35,7 +35,7 @@ export function AppbarClient({
             </button>
           )}
           <div className="text-xl font-bold text-indigo-600 hover:text-indigo-700 transition-colors">
-            PaySmart
+            SecurePay
           </div>
         </div>
         

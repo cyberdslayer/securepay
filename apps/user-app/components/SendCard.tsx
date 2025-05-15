@@ -3,78 +3,150 @@ import { Button } from "@repo/ui/button";
 import { Card } from "@repo/ui/card";
 import { Center } from "@repo/ui/center";
 import { TextInput} from "@repo/ui/textinput";
-// import{Input} from "@repo/ui/input";
-
 import { useState } from "react";
 import { p2pTransfer } from "../app/lib/actions/p2pTransfer";
+import { FiSend, FiUser, FiCreditCard, FiLoader } from 'react-icons/fi';
+import { toast } from 'react-hot-toast';
 
 export function SendCard() {
     const [number, setNumber] = useState("");
     const [amount, setAmount] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [receiverName, setReceiverName] = useState("");
 
-    return <div className="h-[90vh]">
-        <Center>
-                
-            <div title="Send" className=" ">
-                <div className="flex-col mb-6 text-grey-900">
-                    <p className="text-sm flex-1 my-2">Desposit funds into an account</p>
-                    <div className="flex">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#9C27B0" className="size-11">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
-                    </svg>
+    const handleSendMoney = async () => {
+        if (!number || !amount) {
+            toast.error("Please fill in all required fields");
+            return;
+        }
 
+        if (isNaN(Number(amount)) || Number(amount) <= 0) {
+            toast.error("Please enter a valid amount");
+            return;
+        }
 
-                        <p className=" text-4xl ml-2">Bank Transfer</p> 
+        try {
+            setIsLoading(true);
+            const result = await p2pTransfer(number, Number(amount)*100);
+            
+            if (result?.message === "User not found") {
+                toast.error("Recipient not found. Please check the account number.");
+                return;
+            } else if (result?.message?.includes("Insufficient")) {
+                toast.error("Insufficient funds for this transfer.");
+                return;
+            } else if (result?.message) {
+                toast.error(result.message);
+                return;
+            }
+            
+            toast.success(`₹${amount} successfully sent to ${receiverName || number}`);
+            setNumber("");
+            setAmount("");
+            setReceiverName("");
+            
+            // Refresh the page to show the updated recent transfers
+            window.location.reload();
+        } catch (error) {
+            console.error("Transfer error:", error);
+            toast.error("Failed to complete transfer. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="w-full">
+            <div className="flex flex-col space-y-5">
+                <div className="flex items-center mb-2">
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                        <FiSend className="h-5 w-5 text-indigo-600" />
                     </div>
-                       
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-800">Bank Transfer</h3>
+                        <p className="text-sm text-gray-500">Send money to any account</p>
+                    </div>
                 </div>
 
-                <div className="min-w-72 pt-2">
-                {/* Amount input box   */}
-                {/* <label className="block">
-                    <span className="text-grey-900">
-                        Amount
-                    </span>
-                    <div className="flex">
-                        <div className="align-baseline  mr-2 content-center ">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#9C27B0" className="size-8">
-                        <path fillRule="evenodd" d="M3.75 3.375c0-1.036.84-1.875 1.875-1.875H9a3.75 3.75 0 0 1 3.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 0 1 3.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 0 1-1.875-1.875V3.375Zm10.5 1.875a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 16.5 7.5h-1.875a.375.375 0 0 1-.375-.375V5.25Zm-4.5 5.25a.75.75 0 0 0 0 1.5h.375c.769 0 1.43.463 1.719 1.125H9.75a.75.75 0 0 0 0 1.5h2.094a1.875 1.875 0 0 1-1.719 1.125H9.75a.75.75 0 0 0-.53 1.28l2.25 2.25a.75.75 0 0 0 1.06-1.06l-1.193-1.194a3.382 3.382 0 0 0 2.08-2.401h.833a.75.75 0 0 0 0-1.5h-.834A3.357 3.357 0 0 0 12.932 12h1.318a.75.75 0 0 0 0-1.5H10.5c-.04 0-.08.003-.12.01a3.425 3.425 0 0 0-.255-.01H9.75Z" clipRule="evenodd" />
-                        </svg>
-                        </div>
-                        <TextInput placeholder="0.00" label="Amount" onChange={(value)=> {setAmount(value)}}/>
-                        <input name="Amount" type="text" defaultValue={"0.00"} title="Amount" className=" w-full bg-bgcolor h-20 text-grey-900 text-6xl font-bold" />
+                <div className="space-y-4">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                        <TextInput
+                            placeholder={"Receiver Name"}
+                            label="Account Holder Name"
+                            value={receiverName}
+                            onChange={(value) => {
+                                setReceiverName(value);
+                            }}
+                            className="bg-white border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                            icon={<FiUser className="text-gray-400" />}
+                            disabled={isLoading}
+                        />
                     </div>
-                </label> */}
-                    
-                   
-                    <TextInput placeholder={"Receiver Name"} label="Account Holder Name" onChange={(value) => {
-                        setNumber(value)
-                    }} />
-                    <TextInput placeholder={"999 999 9999"} label="Account Number" onChange={(value) => {
-                        console.log(value)
-                        setNumber(value)
-                    }} />
-                    <TextInput placeholder={"2000"} label="Amount to Transfer" onChange={(value) => {
-                        console.log(value)
-                        setAmount(value)
-                    }} />
-                    
-                    {/* <label className="block ">
-                        <div className=" flex border rounded-md bg-primary  ">
-                            <span className="text-grey-900">
-                                Tranfer to
-                            </span>
-                            <input name="Receiver" type="text" defaultValue={""} placeholder="999 999 9999" className="  bg-inherit h-20 text-grey-900 text-red-800 font-bold " />
-                        </div>
-                    </label> */}
 
-                    <div className="pt-4 flex justify-center">
-                        <Button onClick={async () => {
-                            await p2pTransfer(number, Number(amount)*100)
-                        }}>Send</Button>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                        <TextInput
+                            placeholder={"999 999 9999"}
+                            label="Account Number"
+                            value={number}
+                            onChange={(value) => {
+                                setNumber(value);
+                            }}
+                            className="bg-white border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                            icon={<FiCreditCard className="text-gray-400" />}
+                            disabled={isLoading}
+                        />
+                    </div>
+
+                    <div className="bg-gray-50 rounded-lg p-4">
+                        <TextInput
+                            placeholder={"2000"}
+                            label="Amount to Transfer"
+                            value={amount}
+                            onChange={(value) => {
+                                setAmount(value);
+                            }}
+                            className="bg-white border-gray-300 focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                            prefix="₹"
+                            disabled={isLoading}
+                        />
+                        
+                        <div className="flex flex-wrap gap-2 mt-3">
+                            {[100, 500, 1000, 2000].map((amt) => (
+                                <button 
+                                    key={amt}
+                                    onClick={() => setAmount(amt.toString())} 
+                                    className="px-2 py-1 bg-white border border-gray-200 hover:bg-gray-100 text-gray-700 text-sm rounded transition-colors"
+                                    disabled={isLoading}
+                                >
+                                    ₹{amt}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="pt-2">
+                        <Button
+                            onClick={handleSendMoney}
+                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-md shadow-sm flex items-center justify-center"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? (
+                                <>
+                                    <FiLoader className="animate-spin mr-2" /> Processing...
+                                </>
+                            ) : (
+                                <>
+                                    <FiSend className="mr-2" /> Send Money
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                    
+                    <div className="text-center mt-2">
+                        <p className="text-xs text-gray-500">Instant and secure transfers between accounts</p>
                     </div>
                 </div>
             </div>
-        </Center>
-    </div>
+        </div>
+    );
 }

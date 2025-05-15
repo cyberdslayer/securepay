@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../lib/auth";
 import { OnRampTransactions } from "../../../components/OnRampTransactions";
 import TransactionHistory from "../../../components/TransactionHistory";
+import { FiFilter, FiDownload, FiCalendar, FiClock, FiCheckCircle, FiXCircle } from 'react-icons/fi';
 
 async function getBalance() {
     const session = await getServerSession(authOptions);
@@ -46,6 +47,13 @@ export default async function TransactionsPage() {
     const balance = await getBalance();
     const transactions = await getOnRampTransactions();
 
+    // Count transactions by status
+    const statusCounts = {
+        success: transactions.filter(t => t.status === "Success").length,
+        processing: transactions.filter(t => t.status === "Processing").length,
+        // failed: transactions.filter(t => t.status === "Failed").length,
+        total: transactions.length
+    };
     return (
         <div className="w-full">
             {/* Page Header with Gradient */}
@@ -53,7 +61,7 @@ export default async function TransactionsPage() {
                 <h1 className="text-2xl font-bold mb-2">Transaction History</h1>
                 <p className="text-indigo-100">View and track all your transactions</p>
                 
-                <div className="mt-4 flex items-center gap-4">
+                <div className="mt-4 flex flex-wrap items-center gap-4">
                     <div className="bg-white/20 backdrop-blur-sm rounded-lg py-2 px-4">
                         <span className="text-sm">Total Balance:</span>
                         <span className="text-xl font-bold ml-2">₹{((balance?.amount || 0) + (balance?.locked || 0)) / 100}</span>
@@ -91,16 +99,7 @@ export default async function TransactionsPage() {
                 
                 {/* Recent Transactions */}
                 <div className="bg-white rounded-xl shadow-sm">
-                    <div className="p-6">
-                        <h2 className="text-lg font-bold text-gray-800 mb-4">Recent Transactions</h2>
-                    </div>
                     <OnRampTransactions transactions={transactions} />
-                </div>
-                
-                {/* Transaction History */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                    <h2 className="text-lg font-bold text-gray-800 mb-4">All Transfers</h2>
-                    <TransactionHistory />
                 </div>
             </div>
         </div>

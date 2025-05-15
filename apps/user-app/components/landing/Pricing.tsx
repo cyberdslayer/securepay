@@ -1,3 +1,5 @@
+import { FiCheck, FiArrowRight } from 'react-icons/fi';
+
 interface PricingPlan {
   title: string;
   price: string;
@@ -61,62 +63,74 @@ export default function Pricing({ id, onSelectPlan }: PricingProps) {
   ];
 
   return (
-    <section id={id} className="py-20 bg-white">
+    <section id={id} className="py-20 bg-gradient-to-b from-white to-blue-50">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Simple, <span className="text-indigo-600">Transparent</span> Pricing
+            Simple, <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Transparent</span> Pricing
           </h2>
           <p className="text-lg text-gray-600">
             Choose the plan that works best for your needs.
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
             <div 
               key={index} 
-              className={`relative rounded-xl overflow-hidden ${
-                plan.popular ? 'ring-2 ring-indigo-600 transform scale-105' : ''
+              className={`relative rounded-xl overflow-hidden bg-white border ${
+                plan.popular ? 'border-blue-200 shadow-lg md:transform md:scale-105' : 'border-gray-200 shadow-md'
               }`}
             >
               {plan.popular && (
-                <div className="absolute top-0 right-0 bg-indigo-600 text-white text-xs px-3 py-1 uppercase font-medium">
+                <div className="absolute top-0 right-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs px-4 py-1 font-medium rounded-bl-lg">
                   Most Popular
                 </div>
               )}
-              <div className="bg-gray-50 p-8">
+              <div className={`p-8 ${plan.popular ? 'bg-blue-50' : 'bg-gray-50'}`}>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{plan.title}</h3>
                 <div className="flex items-baseline mb-4">
-                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                  <span className={`text-4xl font-bold ${plan.popular ? 'text-blue-600' : 'text-gray-900'}`}>
+                    {plan.price}
+                  </span>
                   {plan.period && <span className="text-gray-600 ml-1">{plan.period}</span>}
                 </div>
                 <p className="text-gray-600 mb-6">{plan.description}</p>
                 <button 
                   onClick={onSelectPlan}
-                  className={`w-full py-3 rounded-lg font-medium transition-all ${
+                  className={`w-full py-3 rounded-md font-medium transition-all flex items-center justify-center ${
                     plan.popular 
-                      ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-lg' 
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg' 
                       : 'bg-white border border-gray-300 text-gray-800 hover:bg-gray-100'
                   }`}
                 >
-                  {plan.cta}
+                  {plan.cta} {plan.popular && <FiArrowRight className="ml-2" />}
                 </button>
               </div>
               <div className="bg-white p-8">
+                <p className="text-sm text-gray-600 mb-4 font-medium">Included features:</p>
                 <ul className="space-y-3">
                   {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center">
-                      <svg className="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      <span className="text-gray-600">{feature}</span>
+                    <li key={i} className="flex items-center text-sm">
+                      <div className={`w-5 h-5 rounded-full mr-3 flex items-center justify-center ${
+                        plan.popular ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        <FiCheck className="w-3 h-3" />
+                      </div>
+                      <span className="text-gray-700">{feature}</span>
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
           ))}
+        </div>
+        
+        <div className="max-w-xl mx-auto text-center mt-12">
+          <p className="text-sm text-gray-500">
+            All plans include core features like secure authentication, end-to-end encryption, and basic customer support.
+            Need a custom solution? <a href="#" className="text-blue-600 font-medium">Contact us</a>.
+          </p>
         </div>
       </div>
     </section>

@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { FiMenu, FiX, FiChevronRight } from 'react-icons/fi';
 
 interface NavigationProps {
   onLogin: () => void;
@@ -37,57 +39,84 @@ export default function Navigation({
 
   return (
     <nav 
-      className={`fixed w-full z-50 transition-all duration-300 py-4 ${
-        scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-white/50 backdrop-blur-sm'
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        scrolled 
+          ? 'bg-white/95 backdrop-blur-md shadow-sm py-3' 
+          : 'bg-gradient-to-b from-blue-50 to-transparent backdrop-blur-sm py-4'
       }`}
     >
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">
-              P
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 relative">
+              <Image 
+                src="/pana.png" 
+                alt="PaySmart logo" 
+                layout="fill" 
+                objectFit="contain"
+                priority 
+              />
             </div>
-            <span className="text-xl font-bold text-gray-900">PaySmart</span>
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+              PaySmart
+            </span>
           </div>
           
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
-            <button onClick={onScrollToFeatures} className="text-gray-600 hover:text-indigo-600 transition-colors">Features</button>
-            <button onClick={onScrollToSecurity} className="text-gray-600 hover:text-indigo-600 transition-colors">Security</button>
-            <button onClick={onScrollToPricing} className="text-gray-600 hover:text-indigo-600 transition-colors">Pricing</button>
-            <button onClick={onScrollToFaq} className="text-gray-600 hover:text-indigo-600 transition-colors">FAQ</button>
+            <button 
+              onClick={onScrollToFeatures} 
+              className="text-gray-700 font-medium hover:text-blue-600 transition-colors"
+            >
+              Features
+            </button>
+            <button 
+              onClick={onScrollToSecurity} 
+              className="text-gray-700 font-medium hover:text-blue-600 transition-colors"
+            >
+              Security
+            </button>
+            <button 
+              onClick={onScrollToPricing} 
+              className="text-gray-700 font-medium hover:text-blue-600 transition-colors"
+            >
+              Pricing
+            </button>
+            <button 
+              onClick={onScrollToFaq} 
+              className="text-gray-700 font-medium hover:text-blue-600 transition-colors"
+            >
+              FAQ
+            </button>
           </div>
           
           {/* Action Buttons */}
           <div className="flex items-center gap-4">
             <button 
               onClick={onLogin}
-              className="hidden md:block px-4 py-2 text-indigo-600 hover:text-indigo-800 transition-colors"
+              className="hidden md:block px-4 py-2 text-blue-600 hover:text-blue-800 font-medium transition-colors"
             >
               Log In
             </button>
             <button 
               onClick={onGetStarted}
-              className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all"
+              className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-md hover:shadow-md transition-all flex items-center"
             >
-              Get Started
+              Get Started <FiChevronRight className="ml-1" />
             </button>
             
             {/* Mobile menu button */}
             <div className="md:hidden">
               <button 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-md text-gray-600 hover:bg-gray-100 transition-colors"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               >
                 {mobileMenuOpen ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <FiX className="w-6 h-6" />
                 ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                  </svg>
+                  <FiMenu className="w-6 h-6" />
                 )}
               </button>
             </div>
@@ -96,14 +125,14 @@ export default function Navigation({
         
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-4 bg-white rounded-lg shadow-lg p-4 absolute left-4 right-4">
+          <div className="md:hidden mt-4 bg-white rounded-xl shadow-lg p-5 absolute left-4 right-4 border border-gray-100">
             <div className="flex flex-col gap-3">
               <button 
                 onClick={() => {
                   onScrollToFeatures();
                   setMobileMenuOpen(false);
                 }} 
-                className="text-gray-800 py-2 hover:text-indigo-600 transition-colors"
+                className="text-gray-700 py-2 hover:text-blue-600 transition-colors font-medium"
               >
                 Features
               </button>
@@ -112,7 +141,7 @@ export default function Navigation({
                   onScrollToSecurity();
                   setMobileMenuOpen(false);
                 }} 
-                className="text-gray-800 py-2 hover:text-indigo-600 transition-colors"
+                className="text-gray-700 py-2 hover:text-blue-600 transition-colors font-medium"
               >
                 Security
               </button>
@@ -121,7 +150,7 @@ export default function Navigation({
                   onScrollToPricing();
                   setMobileMenuOpen(false);
                 }} 
-                className="text-gray-800 py-2 hover:text-indigo-600 transition-colors"
+                className="text-gray-700 py-2 hover:text-blue-600 transition-colors font-medium"
               >
                 Pricing
               </button>
@@ -130,7 +159,7 @@ export default function Navigation({
                   onScrollToFaq();
                   setMobileMenuOpen(false);
                 }} 
-                className="text-gray-800 py-2 hover:text-indigo-600 transition-colors"
+                className="text-gray-700 py-2 hover:text-blue-600 transition-colors font-medium"
               >
                 FAQ
               </button>
@@ -140,9 +169,9 @@ export default function Navigation({
                   onLogin();
                   setMobileMenuOpen(false);
                 }}
-                className="text-indigo-600 py-2 font-medium hover:text-indigo-800 transition-colors"
+                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium flex justify-center items-center transition-colors"
               >
-                Log In
+                Sign In <FiChevronRight className="ml-1" />
               </button>
             </div>
           </div>

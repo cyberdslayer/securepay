@@ -54,7 +54,7 @@ export default async function Dashboard() {
   
   // Format the current date
   const today = new Date();
-  const options = { weekday: 'long', month: 'long', day: 'numeric' };
+  const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric' };
   const formattedDate = today.toLocaleDateString('en-US', options);
   
   // Get time of day for greeting
@@ -73,7 +73,7 @@ export default async function Dashboard() {
             <h1 className="text-3xl font-bold mb-2">
               {greeting}, {user?.name || "User"}
             </h1>
-            <p className="text-indigo-100">Welcome to your PaySmart dashboard</p>
+            <p className="text-indigo-100">Welcome to your SecurePay dashboard</p>
           </div>
           <div className="mt-4 md:mt-0 bg-white/20 backdrop-blur-sm rounded-lg p-4">
             <p className="text-sm">Total Balance</p>

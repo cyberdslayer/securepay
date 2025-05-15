@@ -2,6 +2,7 @@
 import { SidebarItem } from "../../components/SidebarItem";
 import { useState, useEffect } from "react";
 import { AppbarClient } from "../../components/AppbarClient";
+import { Toaster } from 'react-hot-toast';
 
 export default function Layout({
   children,
@@ -64,9 +65,9 @@ export default function Layout({
               collapsed={sidebarCollapsed} 
             />
             <SidebarItem 
-              href={"/transfer"} 
+              href={"/add-money"} 
               icon={<TransferIcon />} 
-              title="Transfer" 
+              title="Add Money" 
               collapsed={sidebarCollapsed} 
             />
             <SidebarItem 
@@ -110,6 +111,7 @@ export default function Layout({
           {children}
         </div>
       </div>
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
     </div>
   );  
 }
